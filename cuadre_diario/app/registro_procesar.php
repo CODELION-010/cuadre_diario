@@ -1,5 +1,5 @@
 <?php
-include "db/conexion_db.php";
+include "../db/conexion_db.php";
 session_start();
 
 
@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nombre'], $_POST['ema
         $stmt->bind_param('ssss', $nombre, $email, $password_hasheada, $telefono);
         $stmt->execute();
         // Redirigir a la página de inicio (index.php)
-        header('Location: index.html');
+        header('Location: ../index.php');
         exit();
     } else {
         echo "Error en la consulta de inserción: " . $conn->error;

@@ -1,6 +1,6 @@
 <?php
 session_start();
-include "db/conexion_db.php";
+include "../db/conexion_db.php";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'], $_POST['contrasena'])) {
     $email = $_POST['email'];
@@ -24,11 +24,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'], $_POST['cont
                 // Redirige al usuario a la página de inicio (index.php)
                 header('Location: index.php');
                 exit();
-            } else {
-                echo "La contraseña es incorrecta. Intenta de nuevo.";
+            } else {//mensaje error clave incorrecta
+                header('Location: ../index.php?error=clave');
             }
         } else {
-            echo "El correo electrónico no se encuentra registrado.";
+            header('Location: ../index.php?error=email');
         }
     } else {
         echo "Error en la consulta: " . $conn->error;

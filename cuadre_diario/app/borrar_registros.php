@@ -2,12 +2,16 @@
 session_start();
 
 // Verifica si el usuario ha iniciado sesión
-if (!isset($_SESSION['correo'])) {
+if (!isset($_SESSION['email'])) {
     // Si no ha iniciado sesión, redirige al usuario a la página de inicio de sesión.
-    header('Location: login.php');
+    header('Location: ../index.php');
     exit();
 }
-include "db/conexion_db.php";
+// Después de borrar los registros con éxito
+session_start();
+$_SESSION['borrado_exitoso'] = true;
+
+include "../db/conexion_db.php";
 
 // Verificar si se ha enviado el formulario para borrar los registros de la tabla movimientos
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['borrar_registros'])) {
@@ -20,5 +24,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['borrar_registros'])) 
     } else {
         echo "Error al borrar los registros de la tabla movimientos: " . $conn->error;
     }
-}
+}header('Location: index.php?borrado_exitoso=1');
 ?>

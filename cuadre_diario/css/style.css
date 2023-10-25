@@ -500,9 +500,9 @@ form.sign-up-form {
   background: rgba(0, 0, 0, 0.25);
 }
 .error_menssage {
-  color: rgb(249, 244, 244); /* Cambia el color a tu elección */
-  font-size: 12px; /* Cambia el tamaño de fuente a tu elección */
-  margin-top: 1px; /* Ajusta la separación entre el input y el mensaje de error */
+  color: rgb(18, 2, 242);
+  font-size: 12px; 
+  margin-top: 1px; 
 }
 
 /* MEDIA SCREEN */

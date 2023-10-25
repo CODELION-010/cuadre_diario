@@ -1,78 +1,122 @@
 
-<?php
-session_start();
-
-// Verifica si el usuario ha iniciado sesión
-if (!isset($_SESSION['email'])) {
-    // Si no ha iniciado sesión, redirige al usuario a la página de inicio de sesión.
-    header('Location: index.html');
-    exit();
-}
-// Variables de sesión ya establecidas (correo y nombre) disponibles para su uso.
-$correo = $_SESSION['email'];
-$nombre = $_SESSION['nombre'];
-echo" Bienvenido . $nombre";
-
-include "db/conexion_db.php";
-
-// Obtener el último valor registrado en la tabla valor_base
-$sql = "SELECT monto_base FROM valor_base ORDER BY id DESC LIMIT 1";
-$result = $conn->query($sql);
-
-if ($result && $result->num_rows > 0) {
-    $monto_base_actual = $result->fetch_assoc()['monto_base'];
-} else {
-    $monto_base_actual = 0; // Valor predeterminado si no hay registros en la tabla
-}
-?>
 <!DOCTYPE html>
-<html lang="es">
+<html class="html" lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro Movimientos Bancarios</title>
-    <link rel="stylesheet" href="css/stylephp.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inicia Sesion o Registrate</title>
+  <link rel="icon" href="img/login_icon.png">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <link rel="stylesheet" href="sweetalert2.min.css">
+  <!-- CUSTOM CSS -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- FONT AWESOME -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- GOOGLE FONTS -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 
 <body>
-<a href="cerrar_sesion.php">Cerrar Sesión</a>
-    <!-- Mostrar el valor base en pantalla -->
-    <h2>Valor Base Actual:
-        <?php echo $monto_base_actual; ?>
-    </h2>
+  <div class="container">
+    <div class="forms-container">
+      <div class="signin-signup">
+        <form action="app/login_procesar.php" method="post" class="sign-in-form">
+          <h2 class="title">Inicia Sesion</h2>
+          <div class="input-field">
+            <i class="fas fa-user"></i>
+            <input type="email" name="email" autocomplete="username" placeholder="Correo Registrado" required="yes">
+          </div>
+          <div class="input-field">
+            <i class="fas fa-lock"></i>
+            <input type="password" name="contrasena" autocomplete="current-password" placeholder="Contraseña" id="id_password" required="yes">
+            <i class="far fa-eye" id="togglePassword" style="cursor: pointer;"></i>
+          </div>
 
-    <!-- Formulario para registrar el monto base -->
-    <h2>Registre su monto base</h2>
-    <form action="registrar_base.php" method="post">
-        <input type="number" name="monto_base" id="monto_base">
-        <button type="submit">Registrar</button>
-    </form>
-    <br>
-    <!-- Formulario para registrar retiro -->
-    <h2>Registrar Retiro</h2>
-    <form action="registrar_movimientos.php" method="post">
-        <input type="number" name="monto_retiro" id="monto_retiro">
-        <button type="submit" name="retiro">Retiro</button>
-    </form>
+          <input type="submit" value="Iniciar Sesion" class="btn solid" onclick="errores()" >
 
-    <!-- Formulario para registrar depósito -->
-    <h2>Registrar Depósito</h2>
-    <form action="registrar_movimientos.php" method="post">
-        <input type="number" name="monto_deposito" id="monto_deposito">
-        <button type="submit" name="deposito">Depósito</button>
-    </form>
-    <br>
-    <!-- Botón para consultar movimientos -->
-<h2>Consultar Movimientos</h2>
-<form action="consultar_movimientos.php" method="post">
-    <button type="submit" name="consulta_movimientos">Consultar</button>
-</form>
-<!-- Botón para borrar los registros de la tabla movimientos -->
-<h2>Borrar Registros de la Tabla Movimientos</h2>
-<form action="borrar_registros.php" method="post">
-    <button type="submit" name="borrar_registros">Borrar Registros</button>
-</form>
+          <div class="social-media">
+            <a class="icon-mode" onclick="toggleTheme('dark');"><i class="fas fa-moon"></i></a>
+            <a class="icon-mode" onclick="toggleTheme('light');"><i class="fas fa-sun"></i></a>
+          </div>
+          <p class="text-mode">Cambiar Tema</p>
+        </form>
+        <!--formulario para registro-->
+        <form action="app/registro_procesar.php" method="post" class="sign-up-form" id="form_registro" >
+          <h2 class="title">Registrate</h2>
+          <div class="input-field">
+            <i class="fas fa-user"></i>
+            <input type="text" name="nombre" id="nombre" autocomplete="nombre" placeholder="Nombre de Usuario" required="yes">
+          </div>
+          <span id="nombre_error" class="error_menssage" ></span>
+
+          <div class="input-field">
+            <i class="fas fa-envelope"></i>
+            <input type="email" name="email" id="email" autocomplete="email" placeholder="Correo Electronico" required="yes">
+          </div>
+          <span id="email_error" class="error_menssage" ></span>
+
+          <div class="input-field">
+            <i class="fas fa-lock"></i>
+            <input type="password" name="password" autocomplete="current-password" placeholder="Contraseña" id="id_reg" required="yes">
+            <i class="far fa-eye" id="toggleReg" style="cursor: pointer;"></i>
+          </div>
+          <span id="password_error" class="error_menssage" ></span>
+
+          <div class="input-field">
+            <i class="fas fa-phone"></i>
+            <input type="text" name="telefono"  placeholder="Número de Celular" id="telefono" required="yes">
+          </div>
+          <span id="telefono_error" class="error_menssage" ></span>
+
+
+          <label class="check">
+            <input type="checkbox" checked="checked">
+            <span class="checkmark">Acepto <a href="terms.html">Tratamiento de Datos</a></span>
+          </label>
+          <input type="submit" value="Registrarse" class="btn solid">
+        </form>
+      </div>
+    </div>
+    <div class="panels-container">
+      <div class="panel left-panel">
+        <div class="content">
+          <h3>Aun no tienes cuenta?</h3>
+          <p>Crea tu cuenta e inicia sesion para probar el sistema de registro de operaciones bancarias en su version Beta</p>
+          <button class="btn transparent" id="sign-up-btn">Registrarse</button>
+        </div>
+        <img src="img/login_icon.png" class="image" alt="">
+      </div>
+
+      <div class="panel right-panel">
+        <div class="content">
+          <h3>Ya eres usuario?</h3>
+          <p>Inicia sesion y prueba el sistema sin limites</p>
+          <button class="btn transparent" id="sign-in-btn">Inicia Sesion</button>
+        </div>
+        <img src="img/login_icon.png" class="image" alt="">
+      </div>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+
+  <?php
+
+if (isset($_GET['error'])) {
+    if ($_GET['error'] === 'clave') {
+        echo '<script>swal("Espera...","Clave errada,intenta de nuevo porfavor","error");</script>';
+    }if ($_GET['error'] === 'email') {
+        echo '<script>swal("Espera...","El correo electronico que ingresaste es incorrecto o no esta registrado","error");</script>';
+    }
+}
+?>
+
 </body>
 </html>

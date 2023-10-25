@@ -1,0 +1,124 @@
+*{
+  margin: 0;
+  padding: 0;
+}
+body{
+  background-image: url(../img/fondo_app.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+header{
+  width: 100%; 
+  height: auto;
+  display: flex;
+  background-color: cornflowerblue;
+}
+.dropdown{
+  margin-left: auto;
+  background-color:black;
+}
+h1{
+  color: aliceblue;
+  font-size: 27px;
+  margin-left: 5%;
+}
+h2{
+  font-size: 20px;
+  color: aqua;
+  text-align: center;
+}
+.forms{
+display: flex;
+width: 95%;
+height: auto;
+float: inline-end;
+}
+.forms button{
+  margin-top: 6%;
+}
+.barra_lateral{
+  float: inline-start;
+  width: 5%;
+  height: 350px;
+  background-color: cornflowerblue;
+}
+.modales{
+  background-color: rgba(11, 11, 11, 0.759);;
+  width: 95%;
+  height: 80px;
+  float: inline-end;
+}
+.modales button{
+margin-left: 20%;
+}
+ /*estulos formulario*/ 
+  #mont_base, #reg_retiro, #reg_deposito {
+    color: aliceblue;
+    text-align: center;
+    padding: 30px;
+    width: 50%;
+    height: 160px;
+    border-radius: 10px;
+    background-color: rgba(11, 11, 11, 0.759);
+    box-shadow: 0px 0px 20px 0px rgba(251, 248, 248, 0.775);
+    margin: 2% 1% 2% 1%;
+
+  }
+  /*estilos tabla modal*/
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 10px;
+    background-color: #030303;
+  }
+  table th, table td {
+    border: 2px solid #030303;
+    padding: 5px;
+  }
+  footer{
+    background-color: rgba(11, 11, 11, 0.759);;
+    width: 95%;
+    height: 50px;
+    float: inline-end;
+    margin-top: 5%;
+  }
+  .cal_barra::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px; /*tamaño iconos*/
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
+  /* Estilo del contorno blanco al pasar el mouse */
+  .cal_barra:hover {
+    background-color: cornflowerblue;
+    color: #ffffff;
+    width: 150px;
+    height: 40px;
+    font-size: 20px;
+    font-weight: bold;
+    transition: all 0.5s ease;
+  }
+  [data-icon="../img/calculadora.png"]::after {
+    background-image: url("../img/calculadora.png");
+  }
+  .cal_barra {
+    font-size: 0px;
+    display: grid;
+    margin: 20px 0px 0px 0px;
+    border-radius: 2px;
+    
+    color: #ffffff;
+    text-decoration: none;
+    text-align: left;
+    color: #ffffff;
+   
+    position: relative;
+    width: 40px;
+    height: 40px;
+    transition: all 0.5s ease;
+  }

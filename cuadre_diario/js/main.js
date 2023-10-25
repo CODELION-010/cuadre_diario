@@ -42,17 +42,114 @@ toggleReg.addEventListener("click", function (e) {
 });
 
 
+//validacion de formulario registro
 
-const nombreField = document.querySelector('#nombre');
-const nombreError = document.querySelector('#nombre_error');
+// Valida el nombre
+function validateName(name) {
+  // No permite caracteres como @ * o ""
+  const regex = /^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]+$/;
+  return regex.test(name);
+}
 
-nombreField.addEventListener('input', () => {
-    const nombreValue = nombreField.value;
-    const invalidChars = /[@*]/;
+// Valida el email
+function validateEmail(email) {
+  // No permite correos con dominio @yopmail
+  const regex = /^((?!yopmail\.com).)+@((?!yopmail\.com).)+$/;
+  return regex.test(email);
+}
 
-    if (invalidChars.test(nombreValue)) {
-        nombreError.textContent = "El nombre no puede contener '@' ni '*'";
-    } else {
-        nombreError.textContent = "";
-    }
+// Valida la contraseña
+function validatePassword(password) {
+  // Debe tener al menos 3 caracteres
+  // Debe tener al menos 1 mayúscula
+  // Debe tener un máximo de 16 caracteres
+  // No permite caracteres como {} o ""
+  const regex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=\S+$).{3,16}$/;
+  return regex.test(password);
+}
+
+// Valida el teléfono
+function validatePhone(phone) {
+  // Debe tener al menos 10 caracteres
+  // Debe empezar por 3
+  const regex = /^3\d{9}$/;
+  return regex.test(phone);
+}
+// Valida el formulario
+function validateForm() {
+  // Obtiene los valores de los campos por medio de el id de cada uno
+  const name = document.getElementById('nombre').value;
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('id_reg').value;
+  const phone = document.getElementById('telefono').value;
+
+  // Valida el nombre
+  if (!validateName(name)) {
+    // Muestra un mensaje de error
+    document.getElementById('nombre_error').innerHTML = 'El nombre solo puede contener letras, espacios y Ñ';
+    return false;
+  } else {
+    // Elimina el mensaje de error al cumplirse la validacion
+    document.getElementById('nombre_error').innerHTML = '';
+  }
+
+  // Valida el email
+  if (!validateEmail(email)) {
+    // Muestra un mensaje de error
+    document.getElementById('email_error').innerHTML = 'El email no es válido';
+    return false;
+  } else {
+    // Elimina el mensaje de error
+    document.getElementById('email_error').innerHTML = '';
+  }
+
+  // Valida la contraseña
+  if (!validatePassword(password)) {
+    // Muestra un mensaje de error
+    document.getElementById('password_error').innerHTML = 'La contraseña debe tener al menos 3 caracteres, 1 mayúscula y un máximo de 16 caracteres';
+    return false;
+  } else {
+    // Elimina el mensaje de error
+    document.getElementById('password_error').innerHTML = '';
+  }
+
+  // Valida el teléfono
+  if (!validatePhone(phone)) {
+    // Muestra un mensaje de error
+    document.getElementById('telefono_error').innerHTML = 'El teléfono debe contener solo numeros, empezar con el numero 3 y tener al menos 10 caracteres';
+    return false;
+  } else {
+    // Elimina el mensaje de error
+    document.getElementById('telefono_error').innerHTML = '';
+  }
+
+  // Si todas las validaciones pasan, devuelve true
+  return true;
+}
+// Agrega un evento al botón de envío del formulario
+document.getElementById('form_registro').addEventListener('submit', function(event) {
+  // Evita que el formulario se envíe si no es válido
+  if (!validateForm()) {
+    event.preventDefault();
+  }
 });
+
+
+/*/Agrega un evento al botón borrado de base de datos(en ensayo)
+document.addEventListener("DOMContentLoaded", function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('borrado_exitoso') === "1") {
+      alert("Registros de la tabla movimientos borrados correctamente.");
+  }
+});*/
+
+//funcion para boton iniciar sesion
+function errores() {
+ swal('Opps...','No has ingresado ningun correo o contraseña', 'error');
+}
+
+
+function sinvalor() {
+  swal('Espera','El valor base debe ser minimo de  $ 10.000', 'error');
+
+}

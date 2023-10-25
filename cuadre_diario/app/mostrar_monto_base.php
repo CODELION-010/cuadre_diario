@@ -1,6 +1,6 @@
 <?php
 session_start();
-include "db/conexion_db.php";
+
 
 // Obtener el último valor registrado en la tabla valor_base
 $sql = "SELECT monto_base FROM valor_base ORDER BY id DESC LIMIT 1";
