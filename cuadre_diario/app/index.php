@@ -1,22 +1,22 @@
 
 <?php
 session_start();
-
+include "../db/conexion_db.php";
 // Verifica si el usuario ha iniciado sesión
-if (!isset($_SESSION['email'])) {
+if (!isset($_SESSION['email']) && !isset($_SESSION['user_id'])) {
     // Si no ha iniciado sesión, redirige al usuario a la página de inicio de sesión.
     header('Location: ../index.php');
     exit();
 }
+          $user_id = $_SESSION['user_id'];
+          $correo = $_SESSION['email'];
+          $nombre = $_SESSION['nombre'];
+         
 
-// Variables de sesión ya establecidas (correo y nombre) disponibles para su uso.
-$correo = $_SESSION['email'];
-$nombre = $_SESSION['nombre'];
 
-include "../db/conexion_db.php";
 
 // Obtener el último valor registrado en la tabla valor_base
-$sql = "SELECT monto_base FROM valor_base ORDER BY id DESC LIMIT 1";
+$sql = "SELECT * FROM valor_base WHERE user_id = $user_id ORDER BY id DESC LIMIT 1";
 $result = $conn->query($sql);
 
 if ($result && $result->num_rows > 0) {
@@ -79,7 +79,7 @@ if ($result && $result->num_rows > 0) {
     <div id="mont_base" >
       <h2>Registra Monto Base</h2>
       <form action="registrar_base.php" method="post">
-          <input type="number" name="monto_base" id="monto_base" min="1000000" >
+          <input type="number" name="monto_base" id="monto_base" required="yes" min="1000000" >
           <button type="submit" class="btn btn-outline-info" onclick="sinvalor()" >Registrar</button>
       </form>
     </div>
@@ -88,7 +88,7 @@ if ($result && $result->num_rows > 0) {
    <div id="reg_retiro" >
     <h2>Registrar Retiro</h2>
     <form action="registrar_movimientos.php" method="post">
-        <input type="number" name="monto_retiro" id="monto_retiro">
+        <input type="number" name="monto_retiro" id="monto_retiro" required="yes" min="1500" >
         <button type="submit" name="retiro" class="btn btn-outline-info">Retiro</button>
     </form>
    </div>
@@ -97,7 +97,7 @@ if ($result && $result->num_rows > 0) {
    <div id="reg_deposito" >
     <h2>Registrar Depósito</h2>
     <form action="registrar_movimientos.php" method="post">
-        <input type="number" name="monto_deposito" id="monto_deposito">
+        <input type="number" name="monto_deposito" id="monto_deposito"  required="yes" min="10000" >
         <button type="submit" name="deposito"  class="btn btn-outline-info">Depósito</button>
     </form>
  </div>    
@@ -112,61 +112,70 @@ if ($result && $result->num_rows > 0) {
    </button>
    <div class="modal fade" id="modalConsultarMovimientos" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Registros Actuales</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <table class="table">
-          <tr><th>ID</th><th>Valor</th><th>Tipo</th><th>Fecha y Hora</th></tr>
-          <?php
-          // Consultar registros de la tabla "movimientos"
-          $query = "SELECT id, monto, tipo, DATE_FORMAT(fecha, '%Y-%m-%d %h:%i %p') AS fecha FROM movimientos";
-          $result = $conn->query($query);
-
-          // Comprobar si hay registros
-          if ($result && $result->num_rows > 0) {
-
-          // Obtener los datos de la consulta
-          $datos = [];
-          while ($row = $result->fetch_assoc()) {
-             $datos[] = $row;
-          }
-    // Ordenar los datos en orden inverso
-         arsort($datos);
-
-    // Mostrar los datos en la tabla
-    foreach ($datos as $dato) {
-        $id = $dato['id'];
-        $monto = $dato['monto'];
-        $tipo = $dato['tipo'];
-        $fecha = $dato['fecha'];
-        $monto = number_format($monto, 0, ',', '.');
-
-        echo "<tr>";
-        echo "<td>$id</td>";
-        echo "<td>$ $monto</td>";
-        echo "<td>$tipo</td>";
-        echo "<td>$fecha</td>";
-        echo "</tr>";
-        }
-       echo "</table>";
-        } else {
-            echo "<h2>No se encontraron registros.</h2>";
-        }
-           $conn->close();
-          ?>
-        </table>
-       </div>
-       <div class="modal-footer">
-         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-       </div>
-     </div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Registros Actuales</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table">
+                    <tr>
+                        <th>ID</th>
+                        <th>Valor</th>
+                        <th>Tipo</th>
+                        <th>Fecha y Hora</th>
+                    </tr>
+                    <?php
+                    // Consultar registros de la tabla "movimientos"
+                 // Consultar registros de la tabla "movimientos" para el usuario actual
+                 $query = "SELECT id, monto, tipo, DATE_FORMAT(fecha, '%Y-%m-%d %h:%i %p') AS fecha FROM movimientos WHERE user_id = ? ORDER BY fecha DESC";
+                 $stmt = $conn->prepare($query);
+                 
+                 
+                 // Comprobar si la consulta preparada fue exitosa
+                 if ($stmt) {
+                     // Enlazar el user_id del usuario actual a la consulta
+                     $stmt->bind_param('i', $_SESSION['user_id']);
+                     $stmt->execute();
+                     $result = $stmt->get_result();
+                 
+                     // Resto de tu código para mostrar los movimientos en la tabla
+                     if ($result && $result->num_rows > 0) {
+                         while ($row = $result->fetch_assoc()) {
+                             $id = $row['id'];
+                             $monto = $row['monto'];
+                             $tipo = $row['tipo'];
+                             $fecha = $row['fecha'];
+                             $monto = number_format($monto, 0, ',', '.');
+                             
+                             echo "<tr>";
+                             echo "<td>$id</td>";
+                             echo "<td>$ $monto</td>";
+                             echo "<td>$tipo</td>";
+                             echo "<td>$fecha</td>";
+                             echo "</tr>";
+                         }
+                         echo "</table>";
+                     } else {
+                         echo "<h2>No se encontraron registros.</h2>";
+                     }
+                     $stmt->close();
+                 } else {
+                     echo "Error en la consulta: " . $conn->error;
+                 }
+                 $conn->close();
+                 ?>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
     </div>
-  </div>
+</div>
+
 
  <!-- Botón para borrar registros -->
  <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#modalBorrarRegistros">

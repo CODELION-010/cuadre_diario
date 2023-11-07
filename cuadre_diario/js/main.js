@@ -143,13 +143,14 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 });*/
 
+
+
+
 //funcion para boton iniciar sesion
 function errores() {
  swal('Opps...','No has ingresado ningun correo o contraseña', 'error');
 }
-
-
 function sinvalor() {
-  swal('Espera','El valor base debe ser minimo de  $ 10.000', 'error');
+  swal('Espera','El valor base debe ser minimo de  $ 1.000.000', 'info');
 
 }

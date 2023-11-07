@@ -1,17 +1,18 @@
 <?php
 session_start();
+
 include "../db/conexion_db.php";
 
-// Verificar si se ha enviado el formulario
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['monto_base'])) {
-    $monto_base = $_POST['monto_base'];
-
+// Verificar que el usuario haya iniciado sesión
+if (isset($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];
+    $monto_base=$_POST['monto_base'];
+      
     // Insertar el monto base en la tabla valor_base
-    $sql = "INSERT INTO valor_base (monto_base) VALUES (?)";
+    $sql = "INSERT INTO valor_base (monto_base, user_id) VALUES (?, ?)";
     $stmt = $conn->prepare($sql);
-
     if ($stmt) {
-        $stmt->bind_param('d', $monto_base); // 'd' indica que es un valor decimal (monto)
+        $stmt->bind_param('di', $monto_base, $user_id);
         $stmt->execute();
 
         // Redireccionar a la página principal después de registrar el monto base
@@ -20,5 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['monto_base'])) {
     } else {
         echo "Error en la consulta: " . $conn->error;
     }
+} else {
+    echo "No se ha iniciado sesión.";
 }
+
 ?>
